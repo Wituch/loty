@@ -1,0 +1,197 @@
+---
+title: "Analiza połączeń lotniczych w Europie pod kątem rozprzestrzeniania epidemii"
+author: "Wojciech Agaciński"
+date: "2.2.2020"
+output:
+  md_document:
+    toc: true
+    toc_depth: 2
+    variant: markdown_github
+---
+
+```{r,echo=FALSE, message=FALSE}
+library(igraph)
+library(knitr)
+library(ggplot2)
+
+edgeData <- read.table(file = 'EUAirTransportation_multiplex.edges', sep = ' ', header = FALSE)
+nodeData <- read.table(file = 'EUAirTransportation_nodes.txt', sep = ' ', header = TRUE)
+
+nodeMetaData <- data.frame("name" = nodeData[,2], "lon" = nodeData[,3], "lat" = nodeData[,4])
+edgeMatrix <- data.matrix(edgeData, rownames.force = NA)
+graphMatrix <- matrix(, nrow = 3588, ncol = 2)
+
+for(row in 1:nrow(edgeMatrix)) {
+    label1 <- as.character(nodeData[nodeData$nodeID == edgeMatrix[[row, 2]],]$nodeLabel)
+    label2 <- as.character(nodeData[nodeData$nodeID == edgeMatrix[[row, 3]],]$nodeLabel)
+    graphMatrix[row,1] <- label1
+    graphMatrix[row,2] <- label2
+}
+
+g <- graph.data.frame(graphMatrix, directed=T, vertices=nodeMetaData)
+
+```
+
+# Cel projektu
+
+Celem niniejszego projektu jest analiza sieci połączeń lotniczych w Europie, pod kątem potencjanego rozprzestrzeniania się chorób zakaźnych. Jak wiadomo, transport lotniczny jest jednym z najpopularniejszych metod transportu masowego na świecie. Z uwagi na najmniejszy czas podróży wśród wszystkich innych metod, rozbudowaną sieć oraz ogromną liczbę pasażeróW, transport lotniczy może stanowić poważne zagrożenie w kontekście transmisji chorób zakaźnych.
+
+Inspiracją niniejszego projektu jest trwająca epidemia koronawirusa (2019-nCoV), która rozpoczęła się w mieście Wuhan pod koniec 2019 roku. Projekt ma na celu próbę odpowiedzania na dwa pytania: które z lotnisk w Europie są najbardziej narażone na dalsze rozprzestrzenianie chorobotwórczych patogenów, oraz które lotniska mogą stać się dalszymi celami, gdy dojdzie już do infekcji na kontynencie.
+
+# Informacje o zbiorze danym
+
+Analizie został poddany zbiór danych "EU-AIR TRANSPORTATION MULTIPLEX", dostępny pod adresem https://comunelab.fbk.eu/data.php. Zawiera on sieć połączeń pomiędzy lotniskami w Europie. Dodatkowo, podzielony został na wartswy odpowiadające różnym liniom lotniczym.
+
+## Podstawowe informacje na temat zbioru
+
+```{r,echo=FALSE, message=FALSE}
+
+print(paste(" Liczba wierzchołków (lotnisk): ", nrow(nodeData)))
+print(paste(" Liczba krawędzi (połączeń): ", nrow(edgeData)))
+
+```
+
+## Struktura danych
+
+Informacje na temat wierzchołków sieci - zawarte w pliku "EUAirTransportation_nodes.txt". Jest to w zasadzie słownik metadanych, zawierający nazwy oraz koordynaty lotnisk.
+
+```{r,echo=FALSE, message=FALSE}
+
+kable(head(nodeData))
+
+```
+
+Informacje na temat krawędzi sieci - zawarte w pliku "EUAirTransportation_multiplex.edges". Jest to właściwy opis topologi opisywanej sieci, na podstawie której konstruowany jest graf.
+
+```{r,echo=FALSE, message=FALSE}
+
+kable(head(edgeData))
+
+```
+
+## Informacje na temat sieci
+
+### Rozkład stopni wejściowych
+
+```{r,echo=FALSE, message=FALSE}
+degreeVect <- degree(g, v = V(g), mode = 'in', loops = FALSE, normalized = FALSE)
+ggplot() + aes(degreeVect )+ geom_histogram(colour="black", fill="white")
+```
+
+### Rozkład stopni wyjściowych
+
+```{r,echo=FALSE, message=FALSE}
+degreeVect <- degree(g, v = V(g), mode = 'out', loops = FALSE, normalized = FALSE)
+ggplot() + aes(degreeVect )+ geom_histogram(colour="black", fill="white")
+```
+
+
+### Rozkład długości najkrótszych ścieżek
+
+Przykładowe najkrótsze ścieżki pomiędzy parami wybranych lotnisk
+
+```{r,echo=FALSE, message=FALSE}
+distMatrix <- shortest.paths(g, v=V(g), to=V(g), mode='all')
+kable(distMatrix[1:5,6:10])
+```
+
+### Pośrednictwo 
+
+```{r,echo=FALSE, message=FALSE, warning=FALSE}
+trans <- transitivity(g)
+trans
+```
+
+### Lokalny współczynnik gronowania
+
+```{r,echo=FALSE, message=FALSE, warning=FALSE}
+trans <- transitivity(g, type = 'average')
+trans
+```
+
+
+### Miary oceny sieci
+
+Gęstość
+
+```{r,echo=FALSE, message=FALSE}
+edge_density(g, loops = FALSE)
+```
+
+Średnia bliskość
+
+```{r,echo=FALSE, message=FALSE, warning=FALSE}
+
+mean(closeness(g))
+
+```
+
+Promień
+
+```{r,echo=FALSE, message=FALSE}
+
+radius(g, mode = 'all')
+
+
+```
+
+# Wizualizacja sieci
+
+Po wczytaniu niezbędnych danych, tworzony jest graf, zawierający w atrybutach informacje o współrzędnych geograficznych lotnisk. Jest to istotne przy tworzeniu wizualizacji sieci. Identyfikatory wierzchołków, pomiędzy którymi znajdują się opisywane w głównym pliku krawędzie, są mapowane na nazwy, a właściwie skróty określajace lotniska. Poniżej znajduje graficzna repezentacja sieci.
+
+## Wizualizacja lotnisk z koordynatami
+
+```{r,echo=FALSE, message=FALSE}
+layout <- as.matrix(nodeMetaData[,2:3])
+plot.igraph(g, layout=layout , vertex.size=3, vertex.label=NA, vertex.color = 'blue', edge.color=NA, frame=TRUE)
+```
+
+## Wizualizacja połączeń
+
+```{r,echo=FALSE, message=FALSE}
+layout <- as.matrix(nodeMetaData[,2:3])
+plot.igraph(g, layout=layout , vertex.size=3, vertex.label=NA, vertex.color = 'blue', edge.color='red', frame=TRUE, edge.arrow.mode = 0, edge.width=0.5)
+```
+
+# Najbardziej narażone lotniska
+
+W przypadku wybuchu epidemii, bardzo ważnym działaniem jest zapobieganie powstawaniu kolejnych ognisk choroby. Jedna chora osoba jest wstanie zainfekować dzięsiątki innych, a dodatkowo, jeżeli odbędzie się to podczas podroży, może to rozprzestrzenić chorobę pomięDzy różnymi krajami, a nawet kontynentami. Aby prewencja była skuteczka, warto by było oszacować najbardziej narażone punkty, w których szansa na pojawienie się osoby zarażonej jest największa. 
+
+W przypadku naszej analizy, jednym z podejść byłoby wyznaczenie lotnisk, które obsługuje najwięcej różnych połączeń. Takie lotnisko, będąc hubem, mogłoby obsługiwać zarażonych pasażerów z wielu kierunków. Przyjrzyjmy się które lotniska spełniają to kryterium - wykorzystamy do tego stopnie wejściowe wierzchołków. Oto 5 potencjarnie najbardziej narażonych lotnisk:
+
+
+```{r,echo=FALSE, message=FALSE}
+degreeVect <- degree(g, v = V(g), mode = 'in', loops = FALSE, normalized = FALSE)
+potentialVect <- head(sort(degreeVect, decreasing = TRUE),5)
+kable(names(potentialVect))
+```
+
+Są to w kolejności lotniska: Londyn-Gatwick, Düsseldorf, Rzym-Fiumicino, Dublin oraz Lizbona-Portela. Bez wątpienia są to duże porty lotnicze, w niektórych przypadkach największe w odpowiadających im krajach.
+
+Ta metoda określania zagrożenia nie jest niestety idealna. Faworyzuje ona lotniska, które mają wiele połączeń wejściowych, ale nie bierze pod uwagę, czy te połączenia są z portóW peryferyjnych, czy innych wielkich terminali. Lepszą metodą na określenie najbardziej zagrożonych epidemiologicznie portów lotniczych jest wykorzystanie miary betweenness centrality. Najbardziej centralne w sieci porty lotnicze, stanowiące centra przesiadkowe i obsługujące wiele lotóW z innych dużych i popularnych lotnisk, mogą stanowić miejsce największego zagrożenia.
+
+
+```{r,echo=FALSE, message=FALSE}
+betweennessVar <- betweenness(g, v = V(g), directed = TRUE, weights = NULL, nobigint = TRUE, normalized = FALSE)
+sortedBetweenness <-sort(betweennessVar, decreasing = TRUE)
+kable(names(sortedBetweenness[1:5]))
+```
+
+Analiza pod względem centralności zwróciła podobne, lecz nie jednakowe wyniki. Najbardziej narażone lotniska to: Londyn-Gatwick, Düsseldorf, Dublin, Monachium oraz Ryga.
+
+
+# Strategia zapobiegania dalszym infekcjom
+
+Co jeżeli epidemia dotarła by do Europy? Wystarczyłby jeden pasażer, obsługiwany na bardziej ruchliwym lotnisku, aby choroba przeniosła się na różne kraje. Sprawdźmy, z iloma lotniskami ma najbardziej centralny port lotniczy - Londyn-Gatwick.
+
+```{r,echo=FALSE, message=FALSE}
+topBetweenness <- data.frame(Name = names(sortedBetweenness), Bet = sortedBetweenness)[1,1]
+topChar <- as.character(topBetweenness)
+vertexes <- V(g)[topChar]
+topNeighbors <- neighbors(g, vertexes , mode='out')
+topNeighbors
+
+```
+
+Jak widać powyżej, z samego portu Londyn-Gatwick można dolecieć bezpośrednio do 30 innych lotnisk. Z uwagi na charakterystykę topologi sieci połączeń lotniczych, nawet zainfeowanie pasażerów na jednym lotnisku, może spowodować błyskawiczne rozprzestrzenienie się choroby. W celu zapobiegania pojawianiu się nowych ognisk choroby, środki prewencyjne powinny być wdrożone w inny sposób, niż wyłączone kontrola najbardziej popularnych lotnisk, czy tych mających bezpośrednie połączenie ze strefą epidemii.
+
