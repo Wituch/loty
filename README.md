@@ -16,16 +16,16 @@ Cel projektu
 ============
 
 Celem niniejszego projektu jest analiza sieci połączeń lotniczych w
-Europie, pod kątem potencjanego rozprzestrzeniania się chorób zakaźnych.
-Jak wiadomo, transport lotniczny jest jednym z najpopularniejszych metod
-transportu masowego na świecie. Z uwagi na najmniejszy czas podróży
-wśród wszystkich innych metod, rozbudowaną sieć oraz ogromną liczbę
-pasażeróW, transport lotniczy może stanowić poważne zagrożenie w
-kontekście transmisji chorób zakaźnych.
+Europie, pod kątem potencjalnego rozprzestrzeniania się chorób
+zakaźnych. Jak wiadomo, transport lotniczy jest jednym z
+najpopularniejszych metod transportu masowego na świecie. Z uwagi na
+najmniejszy czas podróży wśród wszystkich innych metod, rozbudowaną sieć
+oraz ogromną liczbę pasażerów, transport lotniczy może stanowić poważne
+zagrożenie w kontekście transmisji chorób zakaźnych.
 
 Inspiracją niniejszego projektu jest trwająca epidemia koronawirusa
 (2019-nCoV), która rozpoczęła się w mieście Wuhan pod koniec 2019 roku.
-Projekt ma na celu próbę odpowiedzania na dwa pytania: które z lotnisk w
+Projekt ma na celu próbę odpowiedzenia na dwa pytania: które z lotnisk w
 Europie są najbardziej narażone na dalsze rozprzestrzenianie
 chorobotwórczych patogenów, oraz które lotniska mogą stać się dalszymi
 celami, gdy dojdzie już do infekcji na kontynencie.
@@ -37,7 +37,7 @@ Analizie został poddany zbiór danych “EU-AIR TRANSPORTATION MULTIPLEX”,
 dostępny pod adresem
 <a href="https://comunelab.fbk.eu/data.php" class="uri">https://comunelab.fbk.eu/data.php</a>.
 Zawiera on sieć połączeń pomiędzy lotniskami w Europie. Dodatkowo,
-podzielony został na wartswy odpowiadające różnym liniom lotniczym.
+podzielony został na warstwy odpowiadające różnym liniom lotniczym.
 
 Podstawowe informacje na temat zbioru
 -------------------------------------
@@ -63,7 +63,7 @@ zawierający nazwy oraz koordynaty lotnisk.
 |       6| LTBJ      |  27.155001|  38.28917|
 
 Informacje na temat krawędzi sieci - zawarte w pliku
-“EUAirTransportation\_multiplex.edges”. Jest to właściwy opis topologi
+“EUAirTransportation\_multiplex.edges”. Jest to właściwy opis topologii
 opisywanej sieci, na podstawie której konstruowany jest graf.
 
 |   V1|   V2|   V3|   V4|
@@ -127,8 +127,8 @@ Po wczytaniu niezbędnych danych, tworzony jest graf, zawierający w
 atrybutach informacje o współrzędnych geograficznych lotnisk. Jest to
 istotne przy tworzeniu wizualizacji sieci. Identyfikatory wierzchołków,
 pomiędzy którymi znajdują się opisywane w głównym pliku krawędzie, są
-mapowane na nazwy, a właściwie skróty określajace lotniska. Poniżej
-znajduje graficzna repezentacja sieci.
+mapowane na nazwy, a właściwie skróty określające lotniska. Poniżej
+znajduje graficzna reprezentacja sieci.
 
 Wizualizacja lotnisk z koordynatami
 -----------------------------------
@@ -145,9 +145,9 @@ Najbardziej narażone lotniska
 
 W przypadku wybuchu epidemii, bardzo ważnym działaniem jest zapobieganie
 powstawaniu kolejnych ognisk choroby. Jedna chora osoba jest wstanie
-zainfekować dzięsiątki innych, a dodatkowo, jeżeli odbędzie się to
-podczas podroży, może to rozprzestrzenić chorobę pomięDzy różnymi
-krajami, a nawet kontynentami. Aby prewencja była skuteczka, warto by
+zainfekować dziesiątki innych, a dodatkowo, jeżeli odbędzie się to
+podczas podroży, może to rozprzestrzenić chorobę pomiędzy różnymi
+krajami, a nawet kontynentami. Aby prewencja była skuteczna, warto by
 było oszacować najbardziej narażone punkty, w których szansa na
 pojawienie się osoby zarażonej jest największa.
 
@@ -155,7 +155,7 @@ W przypadku naszej analizy, jednym z podejść byłoby wyznaczenie lotnisk,
 które obsługuje najwięcej różnych połączeń. Takie lotnisko, będąc hubem,
 mogłoby obsługiwać zarażonych pasażerów z wielu kierunków. Przyjrzyjmy
 się które lotniska spełniają to kryterium - wykorzystamy do tego stopnie
-wejściowe wierzchołków. Oto 5 potencjarnie najbardziej narażonych
+wejściowe wierzchołków. Oto pięć potencjalnie najbardziej narażonych
 lotnisk:
 
 | x    |
@@ -172,11 +172,11 @@ niektórych przypadkach największe w odpowiadających im krajach.
 
 Ta metoda określania zagrożenia nie jest niestety idealna. Faworyzuje
 ona lotniska, które mają wiele połączeń wejściowych, ale nie bierze pod
-uwagę, czy te połączenia są z portóW peryferyjnych, czy innych wielkich
+uwagę, czy te połączenia są z portów peryferyjnych, czy innych wielkich
 terminali. Lepszą metodą na określenie najbardziej zagrożonych
 epidemiologicznie portów lotniczych jest wykorzystanie miary betweenness
 centrality. Najbardziej centralne w sieci porty lotnicze, stanowiące
-centra przesiadkowe i obsługujące wiele lotóW z innych dużych i
+centra przesiadkowe i obsługujące wiele lotów z innych dużych i
 popularnych lotnisk, mogą stanowić miejsce największego zagrożenia.
 
 | x    |
@@ -199,13 +199,13 @@ obsługiwany na bardziej ruchliwym lotnisku, aby choroba przeniosła się
 na różne kraje. Sprawdźmy, z iloma lotniskami ma najbardziej centralny
 port lotniczy - Londyn-Gatwick.
 
-    ## + 30/450 vertices, named, from 48bb9ee:
+    ## + 30/450 vertices, named, from 9f6e781:
     ##  [1] LDDU LDDU LIRP LIRP ESKN LIMJ LPMA LPMA LIPX LIMF LEAM EGPD EGPF EICK EICK
     ## [16] LELC LFMT LFBE EIKN EGAC LXGB LGMK EGNS LCPH EGPE EGPE EGJJ EGJJ EGJB EGHQ
 
 Jak widać powyżej, z samego portu Londyn-Gatwick można dolecieć
-bezpośrednio do 30 innych lotnisk. Z uwagi na charakterystykę topologi
-sieci połączeń lotniczych, nawet zainfeowanie pasażerów na jednym
+bezpośrednio do 30 innych lotnisk. Z uwagi na charakterystykę topologii
+sieci połączeń lotniczych, nawet zainfekowanie pasażerów na jednym
 lotnisku, może spowodować błyskawiczne rozprzestrzenienie się choroby. W
 celu zapobiegania pojawianiu się nowych ognisk choroby, środki
 prewencyjne powinny być wdrożone w inny sposób, niż wyłączone kontrola
