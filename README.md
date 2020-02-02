@@ -199,7 +199,7 @@ obsługiwany na bardziej ruchliwym lotnisku, aby choroba przeniosła się
 na różne kraje. Sprawdźmy, z iloma lotniskami ma najbardziej centralny
 port lotniczy - Londyn-Gatwick.
 
-    ## + 30/450 vertices, named, from 9f6e781:
+    ## + 30/450 vertices, named, from bf4f823:
     ##  [1] LDDU LDDU LIRP LIRP ESKN LIMJ LPMA LPMA LIPX LIMF LEAM EGPD EGPF EICK EICK
     ## [16] LELC LFMT LFBE EIKN EGAC LXGB LGMK EGNS LCPH EGPE EGPE EGJJ EGJJ EGJB EGHQ
 

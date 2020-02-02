@@ -13,6 +13,7 @@ output:
 library(igraph)
 library(knitr)
 library(ggplot2)
+set.seed(10)
 
 edgeData <- read.table(file = 'EUAirTransportation_multiplex.edges', sep = ' ', header = FALSE)
 nodeData <- read.table(file = 'EUAirTransportation_nodes.txt', sep = ' ', header = TRUE)
